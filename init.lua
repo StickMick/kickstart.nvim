@@ -500,6 +500,14 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'seblyng/roslyn.nvim',
+        ft = 'cs',
+        opts = {},
+        config = function(_, opts)
+          require('roslyn').setup(opts)
+        end,
+      },
     },
     config = function()
       -- Brief aside: **What is LSP?**
