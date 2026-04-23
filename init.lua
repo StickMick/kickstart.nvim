@@ -506,8 +506,6 @@ require('lazy').setup({
         opts = {},
         config = function(_, opts)
           require('roslyn').setup(opts)
-          vim.lsp.config('roslyn', {})
-          vim.lsp.enable 'roslyn'
         end,
       },
     },
