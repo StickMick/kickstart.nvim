@@ -500,6 +500,11 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'seblyng/roslyn.nvim',
+        ft = 'cs',
+        opts = {},
+      },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -598,6 +603,11 @@ require('lazy').setup({
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --  See `:help lsp-config` for information about keys and how to configure
+      --
+      -- `roslyn.nvim` handles setup for C#, so we configure and enable it separately.
+      vim.lsp.config('roslyn', {})
+      vim.lsp.enable 'roslyn'
+
       ---@type table<string, vim.lsp.Config>
       local servers = {
         -- clangd = {},
