@@ -74,8 +74,12 @@ return {
       })
 
       -- Mason setup
+      require('mason').setup()
+      require('mason-lspconfig').setup({
+        ensure_installed = { 'lua_ls', 'ts_ls', 'angularls' },
+      })
       require('mason-tool-installer').setup({
-        ensure_installed = { 'lua_ls', 'ts_ls', 'angularls', 'stylua' },
+        ensure_installed = { 'stylua' },
       })
 
       -- Lua Language Server
@@ -116,33 +120,33 @@ return {
 
       -- TypeScript Language Server
       vim.lsp.config('ts_ls', {
-        cmd = { 'typescript-language-server', '--stdio' },
         filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
-        root_dir = vim.fs.root(0, { 'package.json', 'tsconfig.json', 'jsconfig.json' }),
       })
 
-      -- Angular Language Server
-      vim.lsp.config('angularls', {
-        cmd = function()
-          local root_dir = vim.fs.root(0, { 'angular.json', 'project.json' }) or vim.fn.getcwd()
-          return {
-            'ngserver',
-            '--stdio',
-            '--tsProbeLocations', root_dir,
-            '--ngProbeLocations', root_dir,
-          }
+      -- Angular Language Server - requires manual setup due to dynamic cmd
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'typescript', 'html', 'typescriptreact' },
+        callback = function(args)
+          local root_dir = vim.fs.root(args.buf, { 'angular.json', 'project.json' })
+          if not root_dir then return end
+
+          vim.lsp.start({
+            name = 'angularls',
+            cmd = {
+              'ngserver',
+              '--stdio',
+              '--tsProbeLocations', root_dir .. '/node_modules',
+              '--ngProbeLocations', root_dir .. '/node_modules',
+            },
+            root_dir = root_dir,
+            filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx' },
+          })
         end,
-        filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx' },
-        root_dir = vim.fs.root(0, { 'angular.json', 'project.json' }),
       })
-
-      -- Stylua formatter config
-      vim.lsp.config('stylua', {})
 
       -- Enable LSP servers
+      vim.lsp.enable('lua_ls')
       vim.lsp.enable('ts_ls')
-      vim.lsp.enable('angularls')
-      vim.lsp.enable('stylua')
     end,
   },
 }
